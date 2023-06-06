@@ -1,6 +1,13 @@
 import LinkButton from "./components/LinkButton";
 import { prisma } from "@/db";
 import TodoItem from "./components/TodoItem";
+import Header from "./components/Header";
+
+async function toggleTodo(id: string, complete: boolean) {
+  "use server";
+
+  await prisma.todo.update({ where: { id }, data: { complete } });
+}
 
 function getTodos() {
   return prisma.todo.findMany();
@@ -11,13 +18,12 @@ export default async function Home() {
 
   return (
     <>
-      <header className="flex justify-between items-center mb-4">
-        <h1 className="text-2x1">Todos</h1>
+      <Header title="Todos">
         <LinkButton to="/new">New</LinkButton>
-      </header>
+      </Header>
       <ul className="pl-4">
         {todos.map((todo) => (
-          <TodoItem key={todo.id} {...todo} />
+          <TodoItem key={todo.id} {...todo} toggleTodo={toggleTodo} />
         ))}
       </ul>
     </>
